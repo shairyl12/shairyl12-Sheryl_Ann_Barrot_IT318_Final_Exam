@@ -5,7 +5,7 @@
     "express": "^5.2.1",
     "mysql2": "^3.22.3"
   },
-  "name": "eljie_peteros_final_exam",
+  "name": "Sheryl_Ann_Barrot_final_exam",
   "version": "1.0.0",
   "description": "",
   "main": "crud_final_exam.js",
