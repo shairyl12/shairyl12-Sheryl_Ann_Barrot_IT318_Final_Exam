@@ -15,12 +15,13 @@ app.use(express.static('public'));
 // DATABASE CONNECTION
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    // ADD THIS LINE BELOW
-    ssl: { rejectUnauthorized: false } 
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 // CONNECT & INITIALIZE TABLE
@@ -30,7 +31,6 @@ db.connect((err) => {
     } else {
         console.log('Connected to Aiven Database');
         
-        // Auto-create table if it doesn't exist
         const createTableSql = `
             CREATE TABLE IF NOT EXISTS students (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -50,17 +50,14 @@ db.connect((err) => {
 
 // --- ROUTES ---
 
-// HOME PAGE
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/index.html'));
 });
 
-// ADD STUDENT PAGE
 app.get('/add', (req, res) => {
     res.sendFile(path.join(__dirname, 'views/add.html'));
 });
 
-// SAVE STUDENT (CREATE)
 app.post('/save', (req, res) => {
     const { student_id, full_name, course, year_level, email } = req.body;
     const sql = `INSERT INTO students (student_id, full_name, course, year_level, email) VALUES (?, ?, ?, ?, ?)`;
@@ -75,7 +72,6 @@ app.post('/save', (req, res) => {
     });
 });
 
-// VIEW STUDENTS (READ)
 app.get('/students', (req, res) => {
     const sql = 'SELECT * FROM students';
     db.query(sql, (err, results) => {
@@ -117,7 +113,6 @@ app.get('/students', (req, res) => {
     });
 });
 
-// EDIT PAGE (FOR UPDATE)
 app.get('/edit/:id', (req, res) => {
     const sql = 'SELECT * FROM students WHERE id = ?';
     db.query(sql, [req.params.id], (err, result) => {
@@ -131,11 +126,11 @@ app.get('/edit/:id', (req, res) => {
                     <div class="container">
                         <h1>Edit Student</h1>
                         <form action="/update/${s.id}" method="POST">
-                            <input type="text" name="student_id" value="${s.student_id}" required placeholder="Student ID"><br>
-                            <input type="text" name="full_name" value="${s.full_name}" required placeholder="Full Name"><br>
-                            <input type="text" name="course" value="${s.course}" required placeholder="Course"><br>
-                            <input type="text" name="year_level" value="${s.year_level}" required placeholder="Year Level"><br>
-                            <input type="email" name="email" value="${s.email}" required placeholder="Email"><br>
+                            <input type="text" name="student_id" value="${s.student_id}" required><br>
+                            <input type="text" name="full_name" value="${s.full_name}" required><br>
+                            <input type="text" name="course" value="${s.course}" required><br>
+                            <input type="text" name="year_level" value="${s.year_level}" required><br>
+                            <input type="email" name="email" value="${s.email}" required><br>
                             <button type="submit">Update Student</button>
                         </form>
                         <a href="/students">Back</a>
@@ -147,7 +142,6 @@ app.get('/edit/:id', (req, res) => {
     });
 });
 
-// UPDATE LOGIC
 app.post('/update/:id', (req, res) => {
     const { student_id, full_name, course, year_level, email } = req.body;
     const sql = `UPDATE students SET student_id=?, full_name=?, course=?, year_level=?, email=? WHERE id=?`;
@@ -157,7 +151,6 @@ app.post('/update/:id', (req, res) => {
     });
 });
 
-// DELETE LOGIC
 app.get('/delete/:id', (req, res) => {
     db.query('DELETE FROM students WHERE id = ?', [req.params.id], (err) => {
         if (err) res.send('Delete Failed');
@@ -165,5 +158,6 @@ app.get('/delete/:id', (req, res) => {
     });
 });
 
+// IMPORTANT: PORT must be 0.0.0.0 for Render to bind correctly
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
