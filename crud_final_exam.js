@@ -15,13 +15,12 @@ app.use(express.static('public'));
 // DATABASE CONNECTION
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    port: process.env.DB_PORT,
+    // ADD THIS LINE BELOW
+    ssl: { rejectUnauthorized: false } 
 });
 
 // CONNECT & INITIALIZE TABLE
