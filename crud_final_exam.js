@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const express = require('express');
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
@@ -224,5 +223,4 @@ app.get('/delete/:id', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
->>>>>>> 35d8e04cff5270df38c2f709bcb30b38a99001dd
 });
